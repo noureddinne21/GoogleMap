@@ -28,10 +28,10 @@ public class MainActivity extends AppCompatActivity {
     LocationManager locationManager;
     LocationListener locationListener;
 
-    Button liveMyLocationButton,frindelocqtionButton;
+    Button liveMyLocationButton,frindelocqtionButton,addlocqtionButton,drawingRouteButton;
     Double longitude,latitude;
 
-    @SuppressLint({"MissingPermission", "NewApi"})
+    @SuppressLint({"MissingPermission", "NewApi", "MissingInflatedId"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
         liveMyLocationButton = findViewById(R.id.button1);
         frindelocqtionButton = findViewById(R.id.button2);
+        addlocqtionButton = findViewById(R.id.button3);
+        drawingRouteButton = findViewById(R.id.button4);
 
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -81,8 +83,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        addlocqtionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AddMapsActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
 
+        drawingRouteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, DrawingRouteMapsActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
     @Override

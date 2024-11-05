@@ -32,6 +32,14 @@
             android:value="AIzaSyASgNQd06LXXRHYR16qSdmlIe3eunxVFDQ" />
 
         <activity
+            android:name=".DrawingRouteMapsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_drawing_route_maps" />
+        <activity
+            android:name=".AddMapsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_add_maps" />
+        <activity
             android:name=".LiveMyLocationActivity"
             android:exported="false"
             android:label="@string/title_activity_live_my_location" />

@@ -8,11 +8,14 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,6 +26,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.nouroeddinne.googlemap.databinding.ActivityLiveMyLocationBinding;
 import com.nouroeddinne.googlemap.databinding.ActivityMapsBinding;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class LiveMyLocationActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -39,10 +46,13 @@ public class LiveMyLocationActivity extends FragmentActivity implements OnMapRea
         binding = ActivityLiveMyLocationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
-
-
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},1);
+        }
 
     }
 
@@ -58,27 +68,46 @@ public class LiveMyLocationActivity extends FragmentActivity implements OnMapRea
         }
 
         googleMap.setMyLocationEnabled(true);
-
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
-                Log.d("MyGPS", "onLocationChanged live "+location.getLatitude()+":"+location.getLongitude());
-
                 LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                try {
+                    List<Address> addressList = geocoder.getFromLocation(location.getLatitude(),location.getLongitude(),1);
+                    if (addressList != null && addressList.size() > 0){
+                        Log.d("geocoder", "onLocationChanged: "+
+                                addressList.get(0).getAddressLine(0).toString()+" getAdminArea "+
+                                addressList.get(0).getAdminArea().toString()+" getLocality "+
+                                addressList.get(0).getLocality().toString()+" getCountryCode "+
+                                addressList.get(0).getCountryCode().toString()+" getCountryName "+
+                                addressList.get(0).getCountryName().toString()+" getPostalCode "+
+                                addressList.get(0).getPostalCode() +" getPremises "+
+                                addressList.get(0).getPremises()+" getPhone "+
+                                addressList.get(0).getPhone()+" getMaxAddressLineIndex "+
+                                addressList.get(0).getMaxAddressLineIndex()+" getLocale "+
+                                addressList.get(0).getLocale().toString()+" getExtras "+
+                                addressList.get(0).getExtras()+" getUrl "+
+                                addressList.get(0).getUrl()+" getThoroughfare "+
+                                addressList.get(0).getThoroughfare()+" getSubThoroughfare "+
+                                addressList.get(0).getSubThoroughfare()+" getSubLocality "+
+                                addressList.get(0).getSubLocality()+" getSubAdminArea "+
+                                addressList.get(0).getSubAdminArea()+" getFeatureName "+
+                                addressList.get(0).getFeatureName());
+                    }else{
+                        Log.d("geocoder", "no address !");
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
 
             }
         };
-
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,5000,10,locationListener);
-
-
-
-
-
-
+        
     }
 
 
